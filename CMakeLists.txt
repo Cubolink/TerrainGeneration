@@ -56,6 +56,7 @@ set(SOURCE_FILES
         src/vertexarray.h
         src/vertexbuffer.h
         src/vertexbufferlayout.h
+        src/shape.h
 
         src/glerrorhandler.cpp
         src/indexbuffer.cpp
@@ -65,8 +66,10 @@ set(SOURCE_FILES
         src/vertexarray.cpp
         src/vertexbuffer.cpp
         src/vertexbufferlayout.cpp
+        src/shape.cpp
 
-        src/Application.cpp)
+        src/Application.cpp
+        )
 
 add_executable(terraingen
         ${SOURCE_FILES}

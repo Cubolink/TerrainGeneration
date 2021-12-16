@@ -13,6 +13,23 @@ void Renderer::Draw(const VertexArray& vao, const IndexBuffer& ibo, const Shader
 	// We are not doing it, but we should.
 }
 
+void Renderer::Draw(const VertexArray &vao, const IndexBuffer &ibo, const Texture &texture, const Shader &shader) const {
+    shader.Bind();
+    vao.Bind();
+    ibo.Bind();
+    texture.Bind(0);
+
+    GLCall(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Draw(const Shape &shape, const Texture &texture, const Shader &shader) const {
+    shader.Bind();
+    shape.Bind();
+    texture.Bind(0);
+
+    GLCall(glDrawElements(GL_TRIANGLES, shape.getIBOCount(), GL_UNSIGNED_INT, nullptr));
+}
+
 void Renderer::Clear() const
 {
 	glClear(GL_COLOR_BUFFER_BIT);

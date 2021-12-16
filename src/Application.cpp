@@ -1,19 +1,14 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "glerrorhandler.h"
 
-#include "vertexbuffer.h"
-#include "indexbuffer.h"
-#include "vertexarray.h"
 #include "shader.h"
 #include "texture.h"
 #include "renderer.h"
+#include "shape.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -35,7 +30,7 @@ int main()
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(w_width, w_height, "Haro wado", NULL, NULL);
+    window = glfwCreateWindow(w_width, w_height, "Haro wado", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -52,18 +47,6 @@ int main()
     /* Starting main program */
 
 
-    float triangle_vertex_positions[] = {
-        // x,      y,   tx,   ty
-        -0.5f, -0.5f, 0.0f, 0.0f,
-         0.5f, -0.5f, 1.0f, 0.0f,
-         0.5f,  0.5f, 1.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f, 1.0f
-    };
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
     GLCall(glEnable(GL_BLEND));  // enable blending (transparency)
 
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));  // define how openGL will blend alpha. Takes the source alpha ans use 1 - that when rendering somthing in the top.
@@ -72,16 +55,7 @@ int main()
     // So the resulting equation is:
     // (R,G,B,A) = (r_{src} * alpha_{src} + r_{dest} * (1 - alpha_{src}), ..., ...) = (r_{dest}, ..., ..., ...)
 
-    VertexArray vao;
-    VertexBuffer vbo = VertexBuffer(triangle_vertex_positions, sizeof(triangle_vertex_positions));
-    VertexBufferLayout vblayout;
-    vblayout.Push<float>(2);
-    vblayout.Push<float>(2);
-    vao.AddBuffer(vbo, vblayout);
-
-    IndexBuffer ibo = IndexBuffer(indices, 6);
-
-    float w_proportion = ((float) w_height)/w_width;
+    float w_proportion = ((float) w_height)/((float) w_width);
     //glm::mat4 projection_m = glm::ortho(-1/w_proportion, 1/w_proportion, -1.0f, 1.0f, -1.0f, 1.0f);  // projection left, right, top, bottom, near, far
     glm::mat4 projection_m = glm::perspective(glm::radians(50.0f), (float) 1/w_proportion, 0.1f, 100.0f);
 
@@ -93,23 +67,11 @@ int main()
     glm::vec3 translation = glm::vec3(0, 0, -2.f);
     glm::mat4 model_m;// = glm::translate(glm::mat4(1.0f), translation);
 
-    glm::mat4 mvp_m; // = projection_m * view_m * model_m;
-
-    Shader shaderProgram = Shader("resources/shaders/basic_texture_transform_shader.shader");
-    shaderProgram.Bind();
-    //shaderProgram.SetUniform4f("u_color", 0.8f, 0.3f, 0.8f, 1.0f);
-    shaderProgram.SetUniformMat4f("u_MVP", mvp_m);
-
+    Shader shaderProgram = Shader("resources/shaders/texture_mpv_shader.shader");
     Texture texture = Texture("resources/textures/red_yoshi.png");
-    texture.Bind(0);
-    shaderProgram.SetUniform1i("u_texture", 0);  // we pass the slot, the same as in Bind(). By default is 0, I explicitely wrote 0 here to clarify.
+    Shape square_shape = createTextureQuad();
 
-    /*We're going to unbind all here, to test the correct binding in the loop*/
-    shaderProgram.Unbind();
-    vao.Unbind();
-    vbo.Unbind();
-    ibo.Unbind();
-    texture.Unbind();
+    /*The binding goes on the loop*/
 
     Renderer renderer = Renderer();
 
@@ -122,8 +84,6 @@ int main()
     // Some ImgGui variable states
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    float red = 0.0f;
-    float increment = 0.01f;
     glfwSwapInterval(1); // enables vsync
 
     /* Loop until the user closes the window */
@@ -137,11 +97,6 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        mvp_m = projection_m * view_m * model_m;
-
-        shaderProgram.Bind();
-        texture.Bind();
-
         // Updating camera data
         position = glm::vec3(0, 0, 0);
         look_at = glm::vec3(0, 0, -1);
@@ -151,18 +106,19 @@ int main()
 
         model_m = glm::translate(glm::mat4(1.0f), translation);
 
-        //shaderProgram.SetUniform4f("u_color", red, 0.3f, 0.8f, 1.0f);
-        shaderProgram.SetUniformMat4f("u_MVP", mvp_m);
-        shaderProgram.SetUniform1i("u_texture", 0);
+        // Updating uniforms
 
-        renderer.Draw(vao, ibo, shaderProgram);
+        shaderProgram.Bind();
+        shaderProgram.SetUniformMat4f("u_projection", projection_m);
+        shaderProgram.SetUniformMat4f("u_view", view_m);
+        shaderProgram.SetUniformMat4f("u_model", model_m);
+        shaderProgram.SetUniform1i("u_texture", 0);  // we pass the slot, the same as in texture.Bind(0). By default is 0, I explicitely wrote 0 here to clarify.
 
-        if (red < 0.0f || red > 1.0f) increment = -increment;
-        red += increment;
+        renderer.Draw(square_shape, texture, shaderProgram);
 
         {
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Variables");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("Translation");               // Display some text (you can use a format strings too)
 
@@ -170,7 +126,6 @@ int main()
             ImGui::SliderFloat("y", &translation.y, -1.0f, 1.0f);
             ImGui::SliderFloat("z", &translation.z, -100.0f, -1.0f);
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-;
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
@@ -203,6 +158,7 @@ int main()
     std::cout << "Destroying window" << std::endl;
 
     glfwDestroyWindow(window);
+    glfwPollEvents();
 
     std::cout << "Terminating glfw" << std::endl;
 
