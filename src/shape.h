@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 #include "vertexarray.h"
 #include "vertexbuffer.h"
 #include "vertexbufferlayout.h"
@@ -23,7 +24,7 @@ private:
     IndexBuffer ibo;
 
 public:
-    Shape(const float *vertices, unsigned int sizeof_vertices, const unsigned int *indices, unsigned int sizeof_indices);
+    Shape(const float *vertices, unsigned int sizeof_vertices, const unsigned int *indices, unsigned int sizeof_indices, const std::vector<int>& count_layouts);
     ~Shape();
     void Bind() const;
 
@@ -35,3 +36,5 @@ public:
 Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1);
 
 Shape createTextureQuad();
+
+Shape createColorAxis(float length);

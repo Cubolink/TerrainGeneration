@@ -67,9 +67,11 @@ int main()
     glm::vec3 translation = glm::vec3(0, 0, -2.f);
     glm::mat4 model_m;// = glm::translate(glm::mat4(1.0f), translation);
 
-    Shader shaderProgram = Shader("resources/shaders/texture_mpv_shader.shader");
+    Shader c_mpv_shaderProgram = Shader("resources/shaders/color_mpv_shader.shader");
+    Shader t_mpv_shaderProgram = Shader("resources/shaders/texture_mpv_shader.shader");
     Texture texture = Texture("resources/textures/red_yoshi.png");
     Shape square_shape = createTextureQuad();
+    Shape axis_shape = createColorAxis(1);
 
     /*The binding goes on the loop*/
 
@@ -106,16 +108,22 @@ int main()
 
         // Updating uniforms
 
-        shaderProgram.Bind();
-        shaderProgram.SetUniformMat4f("u_projection", projection_m);
-        shaderProgram.SetUniformMat4f("u_view", camera.getViewMatrix());//view_m);
-        shaderProgram.SetUniformMat4f("u_model", model_m);
-        shaderProgram.SetUniform1i("u_texture", 0);  // we pass the slot, the same as in texture.Bind(0). By default is 0, I explicitely wrote 0 here to clarify.
+        t_mpv_shaderProgram.Bind();
+        t_mpv_shaderProgram.SetUniformMat4f("u_projection", projection_m);
+        t_mpv_shaderProgram.SetUniformMat4f("u_view", camera.getViewMatrix());//view_m);
+        t_mpv_shaderProgram.SetUniformMat4f("u_model", model_m);
+        t_mpv_shaderProgram.SetUniform1i("u_texture", 0);  // we pass the slot, the same as in texture.Bind(0). By default is 0, I explicitely wrote 0 here to clarify.
 
-        renderer.Draw(square_shape, texture, shaderProgram);
+        c_mpv_shaderProgram.Bind();
+        c_mpv_shaderProgram.SetUniformMat4f("u_projection", projection_m);
+        c_mpv_shaderProgram.SetUniformMat4f("u_view", camera.getViewMatrix());
+        c_mpv_shaderProgram.SetUniformMat4f("u_model", model_m);
+
+        renderer.Draw(square_shape, texture, t_mpv_shaderProgram, GL_TRIANGLES);
+        renderer.Draw(axis_shape, texture, c_mpv_shaderProgram, GL_LINES);
 
         {
-            float rho = camera.getRho(), phi = camera.getPhi(), theta = camera.getTheta(),
+            float phi = camera.getPhi(), theta = camera.getTheta(),
             cx = camera.getCX(), cy = camera.getCY(), cz = camera.getCZ();
             ImGui::Begin("Variables");                          // Create a window called "Hello, world!" and append into it.
 
@@ -130,12 +138,10 @@ int main()
             ImGui::SliderFloat("cx", &cx, -10.0f, 10.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
             ImGui::SliderFloat("cy", &cy, -10.0f, 10.0f);
             ImGui::SliderFloat("cz", &cz, 0.0f, 10.0f);
-            ImGui::SliderFloat("rho", &rho, 0.1f, 1.0f);
             ImGui::SliderFloat("phi", &phi, 0, 6.28f);
             ImGui::SliderFloat("theta", &theta, 0, 3.14f);
 
             camera.setEye(cx, cy, cz);
-            camera.setRho(rho);
             camera.setPhi(phi);
             camera.setTheta(theta);
 
