@@ -58,6 +58,7 @@ set(SOURCE_FILES
         src/vertexbufferlayout.h
         src/shape.h
         src/camera.h
+        src/controler.h
 
         src/glerrorhandler.cpp
         src/indexbuffer.cpp
@@ -69,6 +70,7 @@ set(SOURCE_FILES
         src/vertexbufferlayout.cpp
         src/shape.cpp
         src/camera.cpp
+        src/controler.cpp
 
         src/Application.cpp
         )

@@ -8,7 +8,9 @@
 #include <cmath>
 
 Camera::Camera()
-: eye(0, 0, 0), rho(1), phi(0), theta(0)
+: eye(0, 0, 0), phi(0), theta(0),
+dx_dt(0), dy_dt(0), dz_dt(0), max_dEye_dt(2),
+dPhi_dt(0), dTheta_dt(0), max_dCenter_dt(2)
 {
 
 }
@@ -18,21 +20,17 @@ glm::vec3 Camera::getEyeVec3() {
 }
 
 glm::vec3 Camera::getCenterVec3() const {
-    return {rho * std::cos(phi) * std::sin(theta) + eye.x,
-            rho * std::sin(phi) * std::sin(theta) + eye.y,
-            rho * std::cos(theta) + eye.z};
+    return {std::cos(phi) * std::sin(theta) + eye.x,
+            std::sin(phi) * std::sin(theta) + eye.y,
+            std::cos(theta) + eye.z};
 }
 
 glm::vec3 Camera::getUpVec3() {
-    return {.0f, 1.0f, .0f};
+    return {.0f, .0f, 1.0f};
 }
 
 glm::mat4 Camera::getViewMatrix() {
-    return glm::lookAt(eye, getCenterVec3(), getUpVec3());
-}
-
-void Camera::setRho(float value) {
-    rho = value;
+    return glm::lookAt(getEyeVec3(), getCenterVec3(), getUpVec3());
 }
 
 void Camera::setPhi(float value) {
@@ -54,11 +52,22 @@ void Camera::setCenter(float x, float y, float z) {
     y -= eye.y;
     z -= eye.z;
 
-    rho = (float) std::sqrt(x*x + y*y + z*z);
+    // rho = (float) std::sqrt(x*x + y*y + z*z);
     phi = (float) std::atan2(y, x);
     theta = (float) std::atan(std::sqrt(x*x + y*y)/std::sqrt(z*z));
     if (z < 0)
         theta = glm::radians(180.0f) - theta;
 
+}
+
+void Camera::updateCoords(float dt) {
+    eye.x += dx_dt * dt;
+    eye.y += dy_dt * dt;
+    eye.z += dz_dt * dt;
+    phi += dPhi_dt * dt;
+    theta += dTheta_dt * dt;
+    if (phi < 0 || phi > 2 * M_PI) phi = (float) fmod(phi, 2 * M_PI);
+    if (theta <= 0) theta = 0.0001;
+    else if (theta >= M_PI) theta = M_PI - 0.0001;
 }
 
