@@ -95,14 +95,20 @@ int main()
 
     /* Starting main program */
 
+    /* Configuring GL */
+    GLCall(glClearColor(0.43f, 0.39f, 0.48f, 1.0f));
+    GLCall(glEnable(GL_DEPTH_TEST));  // enable depth buffer
+    GLCall(glEnable(GL_CLIP_DISTANCE0));  // clipping distance
+    GLCall(glFrontFace(GL_CCW));  // set ccw mode, useful in particular for culling, but we don't want culling here
+    /*
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    */
+    GLCall(glEnable(GL_BLEND));  // enable transparency
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));  // set blending function
+    GLCall(glBlendEquation(GL_FUNC_ADD));  // set blending results mixer function
 
-    GLCall(glEnable(GL_BLEND));  // enable blending (transparency)
-
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));  // define how openGL will blend alpha. Takes the source alpha ans use 1 - that when rendering somthing in the top.
-    // Nex line is GL_ADD by default, we don't have to explicitely write it, but I want to write it.
-    GLCall(glBlendEquation(GL_FUNC_ADD));  // set How we want to mix transparency.
-    // So the resulting equation is:
-    // (R,G,B,A) = (r_{src} * alpha_{src} + r_{dest} * (1 - alpha_{src}), ..., ...) = (r_{dest}, ..., ..., ...)
+    /* Creating model */
 
     float w_proportion = ((float) w_height)/((float) w_width);
     //glm::mat4 projection_m = glm::ortho(-1/w_proportion, 1/w_proportion, -1.0f, 1.0f, -1.0f, 1.0f);  // projection left, right, top, bottom, near, far
@@ -136,7 +142,6 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     glfwSwapInterval(1); // enables vsync
-
     double t0 = glfwGetTime();
     double t1, dt;
 
