@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "renderer.h"
 #include "shape.h"
+#include "camera.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -59,10 +60,9 @@ int main()
     //glm::mat4 projection_m = glm::ortho(-1/w_proportion, 1/w_proportion, -1.0f, 1.0f, -1.0f, 1.0f);  // projection left, right, top, bottom, near, far
     glm::mat4 projection_m = glm::perspective(glm::radians(50.0f), (float) 1/w_proportion, 0.1f, 100.0f);
 
-    glm::vec3 position;// = glm::vec3(0, 0, 0);
-    glm::vec3 look_at;// = glm::vec3(0, 0, -1);
-    glm::mat4 view_m;// = glm::lookAt(position, look_at, glm::vec3(0, 1, 0));
-    //glm::mat4 view_m = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));  // glm translate creates a transformation matrix from a vector, in this case goes from v3 to m4
+    Camera camera = Camera();
+    camera.setEye(0, 0, 0);
+    camera.setCenter(0, 0, -1);
 
     glm::vec3 translation = glm::vec3(0, 0, -2.f);
     glm::mat4 model_m;// = glm::translate(glm::mat4(1.0f), translation);
@@ -98,9 +98,7 @@ int main()
         ImGui::NewFrame();
 
         // Updating camera data
-        position = glm::vec3(0, 0, 0);
-        look_at = glm::vec3(0, 0, -1);
-        view_m = glm::lookAt(position, look_at, glm::vec3(0, 1, 0));
+        /*view_m = camera.getViewMatrix();*/
 
         // Updating model data
 
@@ -110,14 +108,15 @@ int main()
 
         shaderProgram.Bind();
         shaderProgram.SetUniformMat4f("u_projection", projection_m);
-        shaderProgram.SetUniformMat4f("u_view", view_m);
+        shaderProgram.SetUniformMat4f("u_view", camera.getViewMatrix());//view_m);
         shaderProgram.SetUniformMat4f("u_model", model_m);
         shaderProgram.SetUniform1i("u_texture", 0);  // we pass the slot, the same as in texture.Bind(0). By default is 0, I explicitely wrote 0 here to clarify.
 
         renderer.Draw(square_shape, texture, shaderProgram);
 
         {
-
+            float rho = camera.getRho(), phi = camera.getPhi(), theta = camera.getTheta(),
+            cx = camera.getCX(), cy = camera.getCY(), cz = camera.getCZ();
             ImGui::Begin("Variables");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("Translation");               // Display some text (you can use a format strings too)
@@ -126,6 +125,19 @@ int main()
             ImGui::SliderFloat("y", &translation.y, -1.0f, 1.0f);
             ImGui::SliderFloat("z", &translation.z, -100.0f, -1.0f);
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            ImGui::Text("Camera");
+            ImGui::SliderFloat("cx", &cx, -10.0f, 10.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::SliderFloat("cy", &cy, -10.0f, 10.0f);
+            ImGui::SliderFloat("cz", &cz, 0.0f, 10.0f);
+            ImGui::SliderFloat("rho", &rho, 0.1f, 1.0f);
+            ImGui::SliderFloat("phi", &phi, 0, 6.28f);
+            ImGui::SliderFloat("theta", &theta, 0, 3.14f);
+
+            camera.setEye(cx, cy, cz);
+            camera.setRho(rho);
+            camera.setPhi(phi);
+            camera.setTheta(theta);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
