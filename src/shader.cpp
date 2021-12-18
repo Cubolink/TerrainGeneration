@@ -147,9 +147,18 @@ void Shader::SetUniform1i(const std::string& name, int value)
     GLCall(glUniform1i(GetUniformLocation(name), value));
 }
 
+void Shader::SetUniform1ui(const std::string &name, unsigned int value) {
+    GLCall(glUniform1ui(GetUniformLocation(name), value));
+}
+
+
 void Shader::SetUniform1f(const std::string& name, float value)
 {
     GLCall(glUniform1f(GetUniformLocation(name), value));
+}
+
+void Shader::SetUniform3f(const std::string &name, float v0, float v1, float v2) {
+    GLCall(glUniform3f(GetUniformLocation(name), v0, v1, v2));
 }
 
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
@@ -175,7 +184,7 @@ int Shader::GetUniformLocation(const std::string& name)
     GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));  // retrieve the location of that uniform of the shader
     if (location == -1)
         std::cout << "Warning: uniform '" << name << "' doesn't exist!" << std::endl;
-    
-    m_UniformLocationCache[name] = location;  // store that location in a cache, so we don't have to ask the GPU again 
+
+    m_UniformLocationCache[name] = location;  // store that location in a cache, so we don't have to ask the GPU again
     return location;
 }
