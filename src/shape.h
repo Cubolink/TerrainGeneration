@@ -37,4 +37,6 @@ Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1);
 
 Shape createTextureQuad();
 
+Shape createColorNormalCube(float r, float g, float b);
+
 Shape createColorAxis(float length);

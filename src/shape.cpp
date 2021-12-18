@@ -60,6 +60,59 @@ Shape createTextureQuad()
     return createTextureQuad(0, 1, 0, 1);
 }
 
+Shape createColorNormalCube(float r, float g, float b) {
+    auto *vertices = new float[216] {
+        // Z+
+        -0.5, -0.5,  0.5, r, g, b,   0, 0, 1,
+        0.5,  -0.5,  0.5, r, g, b,   0, 0, 1,
+        0.5,   0.5,  0.5, r, g, b,   0, 0, 1,
+        -0.5,  0.5,  0.5, r, g, b,   0, 0, 1,
+
+        // Z-
+        -0.5, -0.5, -0.5, r, g, b,   0, 0, -1,
+        0.5,  -0.5, -0.5, r, g, b,   0, 0, -1,
+        0.5,   0.5, -0.5, r, g, b,   0, 0, -1,
+        -0.5,  0.5, -0.5, r, g, b,   0, 0, -1,
+
+        // X+
+        0.5, -0.5, -0.5, r, g, b,   1, 0, 0,
+        0.5,  0.5, -0.5, r, g, b,   1, 0, 0,
+        0.5,  0.5,  0.5, r, g, b,   1, 0, 0,
+        0.5, -0.5,  0.5, r, g, b,   1, 0, 0,
+
+        // X-
+        -0.5, -0.5, -0.5, r, g, b,  -1, 0, 0,
+        -0.5,  0.5, -0.5, r, g, b,  -1, 0, 0,
+        -0.5,  0.5,  0.5, r, g, b,  -1, 0, 0,
+        -0.5, -0.5,  0.5, r, g, b,  -1, 0, 0,
+
+        // Y+
+        -0.5, 0.5, -0.5, r, g, b,  0, 1, 0,
+        0.5,  0.5, -0.5, r, g, b,  0, 1, 0,
+        0.5,  0.5,  0.5, r, g, b,  0, 1, 0,
+        -0.5, 0.5,  0.5, r, g, b,  0, 1, 0,
+
+        // Y-
+        -0.5, -0.5, -0.5, r, g, b,  0, -1, 0,
+        0.5,  -0.5, -0.5, r, g, b,  0, -1, 0,
+        0.5,  -0.5,  0.5, r, g, b,  0, -1, 0,
+        -0.5, -0.5,  0.5, r, g, b,  0, -1, 0
+    };
+    auto *indices = new unsigned int[36] {
+        0,  1,   2,  2,  3,  0,  // Z+
+        7,  6,   5,  5,  4,  7,  // Z-
+        8,  9,  10, 10, 11,  8,  // X+
+        15, 14, 13, 13, 12, 15,  // X-
+        19, 18, 17, 17, 16, 19,  // Y+
+        20, 21, 22, 22, 23, 20  // Y-
+    };
+    std::vector<int> count_layouts;
+    count_layouts.push_back(3);
+    count_layouts.push_back(3);
+    count_layouts.push_back(3);
+    return {vertices, 216, indices, 36, count_layouts};
+}
+
 Shape createColorAxis(float length) {
     auto *vertices = new float[42] {
         -length, .0f, .0f, .0f, .0f, .0f, 1.f,
@@ -82,3 +135,4 @@ Shape createColorAxis(float length) {
 
     return {vertices, 42, indices, 6, count_layouts};
 }
+
