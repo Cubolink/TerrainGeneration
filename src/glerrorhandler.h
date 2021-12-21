@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#define ASSERT(x) if (!(x)) __debugbreak();
+#define ASSERT(x) if (!(x)) __debugbreak()
 #define DEBUG  // comment/uncomment this macros definition to compile/not compile in debug mode
 
 #ifdef DEBUG
