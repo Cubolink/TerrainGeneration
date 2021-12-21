@@ -59,6 +59,8 @@ set(SOURCE_FILES
         src/shape.h
         src/camera.h
         src/controler.h
+        src/material.h
+        src/light.h
 
         src/glerrorhandler.cpp
         src/indexbuffer.cpp
@@ -71,6 +73,8 @@ set(SOURCE_FILES
         src/shape.cpp
         src/camera.cpp
         src/controler.cpp
+        src/material.cpp
+        src/light.cpp
 
         src/Application.cpp
         )

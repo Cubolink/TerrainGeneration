@@ -42,3 +42,12 @@ void Renderer::Draw(const Shape &shape, const Texture &texture, const Shader &sh
 
     GLCall(glDrawElements(gl_mode, shape.getIBOCount(), GL_UNSIGNED_INT, nullptr));
 }
+
+void Renderer::Draw(const Shape &shape, const Material &material, const Light &light, Shader &shader, int gl_mode) const {
+    shader.Bind();
+    shape.Bind();
+    material.Bind(shader);
+    light.Bind(shader);
+
+    GLCall(glDrawElements(gl_mode, shape.getIBOCount(), GL_UNSIGNED_INT, nullptr));
+}

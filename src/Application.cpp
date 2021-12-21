@@ -5,10 +5,12 @@
 
 #include "glerrorhandler.h"
 
-#include "shader.h"
+#include "light.h"
+#include "material.h"
 #include "texture.h"
-#include "renderer.h"
 #include "shape.h"
+#include "shader.h"
+#include "renderer.h"
 #include "camera.h"
 #include "controler.h"
 
@@ -130,7 +132,9 @@ int main()
     Shape square_shape = createTextureQuad();
     Shape axis_shape = createColorAxis(1);
     Shape normal_color_cube_shape = createColorNormalCube(0.2, 0.3, 0.7);
-
+    Material cube_material = Material(0.3f, 0.2f, 0.6f, 100, texture);
+    Light light = Light(1.0f, 1.0f, 1.0f, glm::vec3(-5, -5, 5),
+                        0.0001f, 0.03f, 0.01f);
     /*The binding goes on the loop*/
 
     Renderer renderer = Renderer();
@@ -189,22 +193,11 @@ int main()
         gouraurd_c_shaderProgram.SetUniformMat4f("u_projection", projection_m);
         gouraurd_c_shaderProgram.SetUniformMat4f("u_view", camera.getViewMatrix());
         gouraurd_c_shaderProgram.SetUniformMat4f("u_model", model_m);
-        gouraurd_c_shaderProgram.SetUniform3f("u_La", 1.0, 1.0, 1.0);
-        gouraurd_c_shaderProgram.SetUniform3f("u_Ld", 1.0, 1.0, 1.0);
-        gouraurd_c_shaderProgram.SetUniform3f("u_Ls", 1.0, 1.0, 1.0);
-        gouraurd_c_shaderProgram.SetUniform3f("u_Ka", 0.2, 0.2, 0.2);
-        gouraurd_c_shaderProgram.SetUniform3f("u_Kd", 0.5, 0.5, 0.5);
-        gouraurd_c_shaderProgram.SetUniform3f("u_Ks", 0.5, 0.5, 0.5);
-        gouraurd_c_shaderProgram.SetUniform3f("u_lightPosition", -5, -5, 5);
         glm::vec3 cam_pos = camera.getEyeVec3();
         gouraurd_c_shaderProgram.SetUniform3f("u_viewPosition", cam_pos.x, cam_pos.y, cam_pos.z);
-        gouraurd_c_shaderProgram.SetUniform1ui("u_shininess", 100);
-        gouraurd_c_shaderProgram.SetUniform1f("u_constantAttenuation", 0.0001);
-        gouraurd_c_shaderProgram.SetUniform1f("u_linearAttenuation", 0.03);
-        gouraurd_c_shaderProgram.SetUniform1f("u_quadraticAttenuation", 0.01);
 
         renderer.Draw(square_shape, texture, t_mpv_shaderProgram, GL_TRIANGLES);
-        renderer.Draw(normal_color_cube_shape, texture, gouraurd_c_shaderProgram, GL_TRIANGLES);
+        renderer.Draw(normal_color_cube_shape, cube_material, light, gouraurd_c_shaderProgram, GL_TRIANGLES);
         renderer.Draw(axis_shape, texture, c_mpv_shaderProgram, GL_LINES);
 
         {
