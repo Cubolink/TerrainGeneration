@@ -1,13 +1,12 @@
+#include <iostream>
 #include "shape.h"
-#include "iostream"
+#include "color.h"
 
 Shape::Shape(const float *vertices, unsigned int vertices_count, const unsigned int *indices, unsigned int indices_count, const std::vector<int>& count_layouts)
 : vertices(vertices), indices(indices),
   vbo(vertices, vertices_count * sizeof (float)),
   ibo(indices, indices_count)
 {
-    std::cout << "Size of vertices: " << vertices_count * sizeof (float);
-    std::cout << "\nSize of indices: " << indices_count << std::endl;
     for (int i: count_layouts)
     {
         vbl.Push<float>(i);  // ex: position coordinates layout, then color or texture, etc
@@ -136,3 +135,71 @@ Shape createColorAxis(float length) {
     return {vertices, 42, indices, 6, count_layouts};
 }
 
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map)
+{
+    long long int w = map.size();
+    long long int h = map[0].size();
+    auto *vertices = new float[w * h * 9];
+    float max_z = 0, min_z = 0;
+    for (long long int x = 0; x < w; x++)
+    {
+        for (long long int y = 0; y < h; y++)
+        {
+            vertices[9*(h*x + y)] = (float) x;
+            vertices[9*(h*x + y) + 1] = (float) y;
+            vertices[9*(h*x + y) + 2] = map[x][y];
+            if (map[x][y]  > max_z)
+                max_z = map[x][y];
+            if (map[x][y] < min_z)
+                min_z = map[x][y];
+        }
+    }
+    float range = max_z - min_z;
+    float hue;
+    for (long long int x = 0; x < w; x++)
+    {
+        for (long long int y = 0; y < h; y++)
+        {
+            hue = 240 * (map[x][y] - min_z) / range;
+            Color::RGB color = Color::hsv_to_rgb({240 - hue, 1.f, 0.5f});
+
+            // falta la asignación de colores también
+            vertices[9*(h*x + y) + 3] = color.r;
+            vertices[9*(h*x + y) + 4] = color.g;
+            vertices[9*(h*x + y) + 5] = color.b;
+            // faltan las normales, temporalmente todas apuntarán hacia arriba, independientemente de la inclinación
+            vertices[9*(h*x + y) + 6] = .0f;
+            vertices[9*(h*x + y) + 7] = .0f;
+            vertices[9*(h*x + y) + 8] = 1.0f;
+        }
+    }
+    std::vector<unsigned int> v_indices;
+    for (long long int x = 1; x < w; x++)
+    {
+        for (long long int y = 1; y < h; y++)
+        {
+            long long int i0 = h*(x-1) + (y-1);
+            long long int i1 = h*x + (y-1);
+            long long int i2 = h*x + y;
+            long long int i3 = h*(x-1) + y;
+            v_indices.push_back(i0);
+            v_indices.push_back(i1);
+            v_indices.push_back(i2);
+            v_indices.push_back(i2);
+            v_indices.push_back(i3);
+            v_indices.push_back(i0);
+        }
+    }
+    auto *indices = new unsigned int [v_indices.size()];
+    for (int i = 0; i < v_indices.size(); i++)
+    {
+        indices[i] = v_indices[i];
+    }
+    std::vector<int> count_layouts;
+    count_layouts.push_back(3);
+    count_layouts.push_back(3);
+    count_layouts.push_back(3);
+    return {vertices, static_cast<unsigned int>((unsigned int) w * h * 9), indices, v_indices.size(), count_layouts};
+
+
+}

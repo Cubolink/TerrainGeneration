@@ -12,6 +12,7 @@
 #include "vertexbufferlayout.h"
 #include "indexbuffer.h"
 #include "texture.h"
+#include "noise.h"
 
 class Shape
 {
@@ -40,3 +41,5 @@ Shape createTextureQuad();
 Shape createColorNormalCube(float r, float g, float b);
 
 Shape createColorAxis(float length);
+
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map);

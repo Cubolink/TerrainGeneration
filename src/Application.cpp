@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "camera.h"
 #include "controler.h"
+#include "noise.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -132,6 +133,8 @@ int main()
     Shape square_shape = createTextureQuad();
     Shape axis_shape = createColorAxis(1);
     Shape normal_color_cube_shape = createColorNormalCube(0.2, 0.3, 0.7);
+    std::vector<std::vector<float>> grid_map(100, std::vector<float>(100, 0));
+
     Material cube_material = Material(0.3f, 0.2f, 0.6f, 100, texture);
     Light light = Light(1.0f, 1.0f, 1.0f, glm::vec3(-5, -5, 5),
                         0.0001f, 0.03f, 0.01f);
@@ -149,6 +152,9 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     glfwSwapInterval(1); // enables vsync
+    float scale = 1, persistance = 1, lacunarity = 1;
+    int seed = 314, octaves = 4;
+
     double t0 = glfwGetTime();
     double t1, dt;
 
@@ -176,6 +182,9 @@ int main()
 
         model_m = glm::translate(glm::mat4(1.0f), translation);
 
+        NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, 0, 0);
+        Shape terrain = createColorNoiseMap(grid_map);
+
         // Updating uniforms
 
         t_mpv_shaderProgram.Bind();
@@ -198,11 +207,10 @@ int main()
 
         renderer.Draw(square_shape, texture, t_mpv_shaderProgram, GL_TRIANGLES);
         renderer.Draw(normal_color_cube_shape, cube_material, light, gouraurd_c_shaderProgram, GL_TRIANGLES);
+        renderer.Draw(terrain, cube_material, light, gouraurd_c_shaderProgram, GL_TRIANGLES);
         renderer.Draw(axis_shape, texture, c_mpv_shaderProgram, GL_LINES);
 
         {
-            float phi = camera.getPhi(), theta = camera.getTheta(),
-            cx = camera.getCX(), cy = camera.getCY(), cz = camera.getCZ();
             ImGui::Begin("Variables");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("Translation");               // Display some text (you can use a format strings too)
@@ -213,15 +221,15 @@ int main()
             ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             ImGui::Text("Camera");
-            ImGui::SliderFloat("cx", &cx, -10.0f, 10.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("cy", &cy, -10.0f, 10.0f);
-            ImGui::SliderFloat("cz", &cz, 0.0f, 10.0f);
-            ImGui::SliderFloat("phi", &phi, 0, 6.28f);
-            ImGui::SliderFloat("theta", &theta, 0, 3.14f);
+            ImGui::Text("-> center: (%.3f, %.3f, %.3f)", camera.getCX(), camera.getCY(), camera.getCZ());
+            ImGui::Text("-> phi: %.3f, theta: %.3f", camera.getPhi(), camera.getTheta());
 
-            camera.setEye(cx, cy, cz);
-            camera.setPhi(phi);
-            camera.setTheta(theta);
+            ImGui::Text("Perlin Terrain Parameters");
+            ImGui::SliderInt("seed", &seed, 1, 400);
+            ImGui::SliderFloat("scale", &scale, 0.01f, 10.f);
+            ImGui::SliderInt("octaves", &octaves, 1, 4);
+            ImGui::SliderFloat("persistance", &persistance, 1.f, 10.f);
+            ImGui::SliderFloat("lacunarity", &lacunarity, 0.1f, 4.f);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();

@@ -46,6 +46,9 @@ set(IMGUI_FILES
         src/vendor/imgui/imstb_textedit.h
         src/vendor/imgui/imstb_truetype.h
         )
+set(PERLIN_NOISE_FILES
+        src/vendor/perlin_noise/PerlinNoise.hpp
+        )
 
 set(SOURCE_FILES
         src/glerrorhandler.h
@@ -77,7 +80,7 @@ set(SOURCE_FILES
         src/light.cpp
 
         src/Application.cpp
-        )
+        src/noise.cpp src/noise.h src/color.h)
 
 add_executable(terraingen
         ${SOURCE_FILES}
@@ -85,6 +88,7 @@ add_executable(terraingen
         ${GLEW_FILES}
         ${STB_IMAGE_FILES}
         ${IMGUI_FILES}
+        ${PERLIN_NOISE_FILES}
         )
 
 # Additional Dependencies
