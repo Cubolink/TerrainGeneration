@@ -42,4 +42,4 @@ Shape createColorNormalCube(float r, float g, float b);
 
 Shape createColorAxis(float length);
 
-Shape createColorNoiseMap(const std::vector<std::vector<float>>& map);
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level);

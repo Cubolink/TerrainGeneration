@@ -22,8 +22,8 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 
-int w_width = 800;
-int w_height = 600;
+int w_width = 1024;
+int w_height = 576;
 CameraController cameraController;
 
 
@@ -152,8 +152,11 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     glfwSwapInterval(1); // enables vsync
-    float scale = 1, persistance = 1, lacunarity = 1;
+    float scale = 1, persistance = 1.7, lacunarity = 0.2;
     int seed = 314, octaves = 4;
+    float offset_x = 0, offset_y = 0;
+    float amplitude = 5;
+    float water_level = 0.45;
 
     double t0 = glfwGetTime();
     double t1, dt;
@@ -182,8 +185,8 @@ int main()
 
         model_m = glm::translate(glm::mat4(1.0f), translation);
 
-        NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, 0, 0);
-        Shape terrain = createColorNoiseMap(grid_map);
+        NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
+        Shape terrain = createColorNoiseMap(grid_map, amplitude*water_level);
 
         // Updating uniforms
 
@@ -227,9 +230,13 @@ int main()
             ImGui::Text("Perlin Terrain Parameters");
             ImGui::SliderInt("seed", &seed, 1, 400);
             ImGui::SliderFloat("scale", &scale, 0.01f, 10.f);
+            ImGui::SliderFloat("offset x", &offset_x, -100.f, 100.f);
+            ImGui::SliderFloat("offset y", &offset_y, -100.f, 100.f);
             ImGui::SliderInt("octaves", &octaves, 1, 4);
-            ImGui::SliderFloat("persistance", &persistance, 1.f, 10.f);
-            ImGui::SliderFloat("lacunarity", &lacunarity, 0.1f, 4.f);
+            ImGui::SliderFloat("persistance", &persistance, 1.f, 50.f);
+            ImGui::SliderFloat("lacunarity", &lacunarity, 0.01f, 1.f);
+            ImGui::SliderFloat("amplitude", &amplitude, 1.f, 20.f);
+            ImGui::SliderFloat("water level", &water_level, 0.f, 1.f);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();

@@ -11,7 +11,7 @@
 
 namespace NoiseGenerator  // It seems I can use namespaces as static classes, using functions instead of static methods, since I don't want to build objects
 {
-    static void generatePerlinNoiseMap(std::vector<std::vector<float>> &map, int seed, float scale, int octaves, float persistance, float lacunarity, float x_offset, float y_offset)
+    static void generatePerlinNoiseMap(std::vector<std::vector<float>> &map, int seed, float scale, int octaves, float persistance, float lacunarity, float x_offset, float y_offset, float z_amplitude = 1)
     {
         int map_width = (int) map.size();
         int map_height = (int) map[0].size();
@@ -66,7 +66,7 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
         for (int i = 0; i < map_width; i++)
         {
             for (int j = 0; j < map_height; j++)
-                map[i][j] = (map[i][j] - min_val) / (max_val - min_val);
+                map[i][j] = z_amplitude * (map[i][j] - min_val) / (max_val - min_val);
         }
 
     }

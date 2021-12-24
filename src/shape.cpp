@@ -135,7 +135,7 @@ Shape createColorAxis(float length) {
     return {vertices, 42, indices, 6, count_layouts};
 }
 
-Shape createColorNoiseMap(const std::vector<std::vector<float>>& map)
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level = 0.45)
 {
     long long int w = map.size();
     long long int h = map[0].size();
@@ -160,13 +160,20 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map)
     {
         for (long long int y = 0; y < h; y++)
         {
-            hue = 240 * (map[x][y] - min_z) / range;
-            Color::RGB color = Color::hsv_to_rgb({240 - hue, 1.f, 0.5f});
+            if (map[x][y] < water_level)
+            {
+                vertices[9*(h*x + y) + 3] = 0;
+                vertices[9*(h*x + y) + 4] = 0;
+                vertices[9*(h*x + y) + 5] = 1;
+            } else
+            {
+                hue = 240 * (map[x][y] - min_z) / range;
+                Color::RGB color = Color::hsv_to_rgb({240 - hue, 1.f, 0.5f});
+                vertices[9*(h*x + y) + 3] = color.r;
+                vertices[9*(h*x + y) + 4] = color.g;
+                vertices[9*(h*x + y) + 5] = color.b;
+            }
 
-            // falta la asignación de colores también
-            vertices[9*(h*x + y) + 3] = color.r;
-            vertices[9*(h*x + y) + 4] = color.g;
-            vertices[9*(h*x + y) + 5] = color.b;
             // faltan las normales, temporalmente todas apuntarán hacia arriba, independientemente de la inclinación
             vertices[9*(h*x + y) + 6] = .0f;
             vertices[9*(h*x + y) + 7] = .0f;
