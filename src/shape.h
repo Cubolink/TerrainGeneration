@@ -17,21 +17,23 @@
 class Shape
 {
 private:
-    const float* vertices;
-    const unsigned int* indices;
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
     VertexArray vao;
     VertexBuffer vbo;
     VertexBufferLayout vbl;
     IndexBuffer ibo;
 
 public:
-    Shape(const float *vertices, unsigned int sizeof_vertices, const unsigned int *indices, unsigned int sizeof_indices, const std::vector<int>& count_layouts);
+    Shape(std::vector<float> vertices, std::vector<unsigned int> indices, const std::vector<int>& count_layouts);
     ~Shape();
     void Bind() const;
 
     void Unbind() const;
 
     inline unsigned int getIBOCount() const { return ibo.GetCount(); }
+
+    Shape& operator= (Shape shape);
 };
 
 Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1);

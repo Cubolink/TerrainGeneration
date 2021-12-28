@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 
 /**
  * VertexBuffer abstraction implementations.
@@ -11,9 +12,11 @@ class VertexBuffer
 private:
 	unsigned int m_RendererID;  // ID of the GL buffer generated
 public:
-	VertexBuffer(const void* data, unsigned int size);
+	explicit VertexBuffer(std::vector<float> &data);
 	~VertexBuffer();
 
 	void Bind() const;
 	void Unbind() const;
+
+    void updateData(std::vector<float> &data);
 };

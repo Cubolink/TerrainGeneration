@@ -2,10 +2,10 @@
 #include "shape.h"
 #include "color.h"
 
-Shape::Shape(const float *vertices, unsigned int vertices_count, const unsigned int *indices, unsigned int indices_count, const std::vector<int>& count_layouts)
+Shape::Shape(std::vector<float> vertices, std::vector<unsigned int> indices, const std::vector<int>& count_layouts)
 : vertices(vertices), indices(indices),
-  vbo(vertices, vertices_count * sizeof (float)),
-  ibo(indices, indices_count)
+  vbo(vertices),
+  ibo(indices)
 {
     for (int i: count_layouts)
     {
@@ -16,8 +16,7 @@ Shape::Shape(const float *vertices, unsigned int vertices_count, const unsigned 
 
 Shape::~Shape()
 {
-    delete[] vertices;
-    delete[] indices;
+
 }
 
 void Shape::Bind() const
@@ -34,16 +33,32 @@ void Shape::Unbind() const
     ibo.Unbind();
 }
 
+Shape &Shape::operator=(Shape shape) {
+
+    if (this == &shape)
+        return *this;
+
+    vertices = shape.vertices;
+    indices = shape.indices;
+
+    vbo.updateData(vertices);
+    ibo.updateData(indices);
+
+    vbl = shape.vbl;
+    vao.AddBuffer(vbo, vbl);
+
+    return *this;
+}
+
 Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1)
 {
-    auto* vertices = new float[20] {
+    std::vector<float> vertices {
             -0.5f, -0.5f, 0.0f, tx0, ty0,
             0.5f, -0.5f, 0.0f, tx1, ty0,
             0.5f, 0.5f, 0.0f, tx1, ty1,
             -0.5f, 0.5f, 0.0f, tx0, ty1
-
     };
-    auto* indices = new unsigned int[6] {
+    std::vector<unsigned int> indices{
             0, 1, 2,
             2, 3, 0
     };
@@ -51,7 +66,7 @@ Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1)
     count_layouts.push_back(3);
     count_layouts.push_back(2);
 
-    return {vertices, 20, indices, 6, count_layouts};
+    return {vertices, indices, count_layouts};
 }
 
 Shape createTextureQuad()
@@ -60,7 +75,7 @@ Shape createTextureQuad()
 }
 
 Shape createColorNormalCube(float r, float g, float b) {
-    auto *vertices = new float[216] {
+    std::vector<float> vertices {
         // Z+
         -0.5, -0.5,  0.5, r, g, b,   0, 0, 1,
         0.5,  -0.5,  0.5, r, g, b,   0, 0, 1,
@@ -97,7 +112,7 @@ Shape createColorNormalCube(float r, float g, float b) {
         0.5,  -0.5,  0.5, r, g, b,  0, -1, 0,
         -0.5, -0.5,  0.5, r, g, b,  0, -1, 0
     };
-    auto *indices = new unsigned int[36] {
+    std::vector<unsigned int> indices {
         0,  1,   2,  2,  3,  0,  // Z+
         7,  6,   5,  5,  4,  7,  // Z-
         8,  9,  10, 10, 11,  8,  // X+
@@ -109,11 +124,11 @@ Shape createColorNormalCube(float r, float g, float b) {
     count_layouts.push_back(3);
     count_layouts.push_back(3);
     count_layouts.push_back(3);
-    return {vertices, 216, indices, 36, count_layouts};
+    return {vertices, indices, count_layouts};
 }
 
 Shape createColorAxis(float length) {
-    auto *vertices = new float[42] {
+    std::vector<float> vertices {
         -length, .0f, .0f, .0f, .0f, .0f, 1.f,
         length, .0f, .0f, 1.f, .0f, .0f, 1.f,
 
@@ -123,7 +138,7 @@ Shape createColorAxis(float length) {
         .0f, .0f, -length, .0f, .0f, .0f, 1.f,
         .0f, .0f, length, .0f, .0f, .1f, 1.f
     };
-    auto *indices = new unsigned int[6] {
+    std::vector<unsigned int> indices {
         0, 1,
         2, 3,
         4, 5
@@ -132,14 +147,14 @@ Shape createColorAxis(float length) {
     count_layouts.push_back(3);
     count_layouts.push_back(4);
 
-    return {vertices, 42, indices, 6, count_layouts};
+    return {vertices, indices, count_layouts};
 }
 
 Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level = 0.45)
 {
     long long int w = map.size();
     long long int h = map[0].size();
-    auto *vertices = new float[w * h * 9];
+    std::vector<float> vertices(w * h * 9);
     float max_z = 0, min_z = 0;
     for (long long int x = 0; x < w; x++)
     {
@@ -180,7 +195,7 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
             vertices[9*(h*x + y) + 8] = 1.0f;
         }
     }
-    std::vector<unsigned int> v_indices;
+    std::vector<unsigned int> indices;
     for (long long int x = 1; x < w; x++)
     {
         for (long long int y = 1; y < h; y++)
@@ -189,24 +204,20 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
             long long int i1 = h*x + (y-1);
             long long int i2 = h*x + y;
             long long int i3 = h*(x-1) + y;
-            v_indices.push_back(i0);
-            v_indices.push_back(i1);
-            v_indices.push_back(i2);
-            v_indices.push_back(i2);
-            v_indices.push_back(i3);
-            v_indices.push_back(i0);
+            indices.push_back(i0);
+            indices.push_back(i1);
+            indices.push_back(i2);
+            indices.push_back(i2);
+            indices.push_back(i3);
+            indices.push_back(i0);
         }
     }
-    auto *indices = new unsigned int [v_indices.size()];
-    for (int i = 0; i < v_indices.size(); i++)
-    {
-        indices[i] = v_indices[i];
-    }
+
     std::vector<int> count_layouts;
     count_layouts.push_back(3);
     count_layouts.push_back(3);
     count_layouts.push_back(3);
-    return {vertices, static_cast<unsigned int>((unsigned int) w * h * 9), indices, v_indices.size(), count_layouts};
 
+    return {vertices, indices, count_layouts};
 
 }

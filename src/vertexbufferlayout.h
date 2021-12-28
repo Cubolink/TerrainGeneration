@@ -62,6 +62,17 @@ public:
 	inline const std::vector<VertexBufferElement> GetElements() const { return m_Elements; }
 	inline unsigned int GetStride() const { return m_Stride; }
 
+    VertexBufferLayout& operator= (VertexBufferLayout vbl)
+    {
+        if (this == &vbl)
+            return *this;
+
+        m_Stride = vbl.m_Stride;
+        m_Elements = vbl.m_Elements;
+
+        return *this;
+    }
+
 private:
 	template<typename T>
 	void Push(unsigned int count, vbl_identity<T>)
