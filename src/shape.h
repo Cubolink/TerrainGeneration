@@ -34,6 +34,10 @@ public:
     inline unsigned int getIBOCount() const { return ibo.GetCount(); }
 
     Shape& operator= (Shape shape);
+
+    std::vector<float> getVertices() { return vertices; }
+
+    std::vector<unsigned int> getIndices() { return indices; }
 };
 
 Shape createTextureQuad(float tx0, float tx1, float ty0, float ty1);

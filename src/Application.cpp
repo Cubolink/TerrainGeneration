@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "controler.h"
 #include "noise.h"
+#include "obj_files.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -269,7 +270,6 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
-
     std::cout << "Window should close" << std::endl;
     std::cout << "Cleaning up ImGui" << std::endl;
     // ImGui Cleanup
@@ -279,7 +279,8 @@ int main()
 
 
     /* End of the program */
-
+    std::cout << "Storing shape" << std::endl;
+    Obj::storeShape(terrain, "terrain.obj");
 
     std::cout << "Destroying window" << std::endl;
 
