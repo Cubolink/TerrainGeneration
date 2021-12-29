@@ -22,7 +22,7 @@ namespace Obj
 
         for (unsigned int i = 0; i < vertices.size(); i += 9)
             f_stream << "v " << vertices[i] << " " << vertices[i+1] << " " << vertices[i+2] << "\n";
-        for (unsigned int i = 3; i < vertices.size(); i += 9)
+        for (unsigned int i = 6; i < vertices.size(); i += 9)
             f_stream << "vn " << vertices[i] << " " << vertices[i+1] << " " << vertices[i+2] << "\n";
 
         for (unsigned int i = 0; i < indices.size(); i += 3)

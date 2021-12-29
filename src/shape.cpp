@@ -1,6 +1,7 @@
 #include <iostream>
 #include "shape.h"
 #include "color.h"
+#include "geometry.h"
 
 Shape::Shape(std::vector<float> vertices, std::vector<unsigned int> indices, const std::vector<int>& count_layouts)
 : vertices(vertices), indices(indices),
@@ -156,6 +157,7 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
     long long int h = map[0].size();
     std::vector<float> vertices(w * h * 9);
     float max_z = 0, min_z = 0;
+    // Generate vertex positions
     for (long long int x = 0; x < w; x++)
     {
         for (long long int y = 0; y < h; y++)
@@ -169,6 +171,7 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
                 min_z = map[x][y];
         }
     }
+    // Generate vertex colores
     float range = max_z - min_z;
     float hue;
     for (long long int x = 0; x < w; x++)
@@ -188,11 +191,52 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
                 vertices[9*(h*x + y) + 4] = color.g;
                 vertices[9*(h*x + y) + 5] = color.b;
             }
+        }
+    }
+    // Generate vertex normals
+    for (long long int x = 0; x < w; x++)
+    {
+        for (long long int y = 0; y < h; y++)
+        {
+            long long int x_l = x - 1, x_r = x + 1;
+            long long int y_l = y - 1, y_r = y + 1;
 
-            // faltan las normales, temporalmente todas apuntarán hacia arriba, independientemente de la inclinación
-            vertices[9*(h*x + y) + 6] = .0f;
-            vertices[9*(h*x + y) + 7] = .0f;
-            vertices[9*(h*x + y) + 8] = 1.0f;
+            std::vector<Geometry::Vector<float>> vectors;
+            if (y_r < h)
+                vectors.emplace_back(
+                        vertices[9*(h*x + y_r) + 0] - vertices[9*(h*x + y) + 0],
+                        vertices[9*(h*x + y_r) + 1] - vertices[9*(h*x + y) + 1],
+                        vertices[9*(h*x + y_r) + 2] - vertices[9*(h*x + y) + 2]
+                        );
+            if (x_l >= 0)
+                vectors.emplace_back(
+                        vertices[9*(h*x_l + y) + 0] - vertices[9*(h*x + y) + 0],
+                        vertices[9*(h*x_l + y) + 1] - vertices[9*(h*x + y) + 1],
+                        vertices[9*(h*x_l + y) + 2] - vertices[9*(h*x + y) + 2]
+                );
+            if (y_l >= 0)
+                vectors.emplace_back(
+                        vertices[9*(h*x + y_l) + 0] - vertices[9*(h*x + y) + 0],
+                        vertices[9*(h*x + y_l) + 1] - vertices[9*(h*x + y) + 1],
+                        vertices[9*(h*x + y_l) + 2] - vertices[9*(h*x + y) + 2]
+                        );
+            if (x_r < w)
+                vectors.emplace_back(
+                        vertices[9*(h*x_r + y) + 0] - vertices[9*(h*x + y) + 0],
+                        vertices[9*(h*x_r + y) + 1] - vertices[9*(h*x + y) + 1],
+                        vertices[9*(h*x_r + y) + 2] - vertices[9*(h*x + y) + 2]);
+
+
+
+            Geometry::Vector<float> v_sum(0, 0, 0);
+            for (int i = 0; i < vectors.size(); i++)
+                v_sum = v_sum + vectors[i].productoCruz(vectors[(i+1)%vectors.size()]);
+
+            Geometry::Vector<double> normal = v_sum.normalizado();
+
+            vertices[9*(h*x + y) + 6] = (float) normal.getX();
+            vertices[9*(h*x + y) + 7] = (float) normal.getY();
+            vertices[9*(h*x + y) + 8] = (float) normal.getZ();
         }
     }
     std::vector<unsigned int> indices;

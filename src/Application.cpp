@@ -134,7 +134,6 @@ int main()
     Shape square_shape = createTextureQuad();
     Shape axis_shape = createColorAxis(1);
     Shape normal_color_cube_shape = createColorNormalCube(0.2, 0.3, 0.7);
-    std::vector<std::vector<float>> grid_map(100, std::vector<float>(100, 0));
 
     Material cube_material = Material(0.3f, 0.2f, 0.6f, 100, texture);
     Light light = Light(1.0f, 1.0f, 1.0f, glm::vec3(-5, -5, 5),
@@ -152,7 +151,9 @@ int main()
     // Some ImgGui variable states
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    glfwSwapInterval(1); // enables vsync
+
+    int map_width = 100, map_height = 100;
+    std::vector<std::vector<float>> grid_map(map_width, std::vector<float>(map_height, 0));
     float scale = 1, persistance = 1.7, lacunarity = 0.2;
     int seed = 314, octaves = 4;
     float offset_x = 0, offset_y = 0;
@@ -164,6 +165,8 @@ int main()
 
     double t0 = glfwGetTime();
     double t1, dt;
+
+    glfwSwapInterval(1); // enables vsync
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -191,6 +194,13 @@ int main()
 
         if (outdated)
         {
+            if (map_width != grid_map.size())
+                grid_map.resize(map_width, std::vector<float>(map_height, 0));
+            if (map_height != grid_map[0].size())
+            {
+                for (auto & row : grid_map)
+                    row.resize(map_height, 0);
+            }
             NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
             terrain = createColorNoiseMap(grid_map, amplitude*water_level);
             outdated = false;
@@ -224,12 +234,7 @@ int main()
         {
             ImGui::Begin("Variables");                          // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("Translation");               // Display some text (you can use a format strings too)
-
-            ImGui::SliderFloat("x", &translation.x, -1.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::SliderFloat("y", &translation.y, -1.0f, 1.0f);
-            ImGui::SliderFloat("z", &translation.z, -100.0f, -1.0f);
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            // ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             ImGui::Text("Camera");
             ImGui::Text("-> center: (%.3f, %.3f, %.3f)", camera.getCX(), camera.getCY(), camera.getCZ());
@@ -253,7 +258,10 @@ int main()
                 outdated = true;
             if(ImGui::SliderFloat("water level", &water_level, 0.f, 1.f))
                 outdated = true;
-
+            if(ImGui::SliderInt("width", &map_width, 10, 300))
+                outdated = true;
+            if(ImGui::SliderInt("height", &map_height, 10, 300))
+                outdated = true;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }

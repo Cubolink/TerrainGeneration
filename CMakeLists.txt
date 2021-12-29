@@ -80,7 +80,7 @@ set(SOURCE_FILES
         src/light.cpp
 
         src/Application.cpp
-        src/noise.cpp src/noise.h src/color.h src/obj_files.h)
+        src/noise.cpp src/noise.h src/color.h src/obj_files.h src/geometry.h)
 
 add_executable(terraingen
         ${SOURCE_FILES}
