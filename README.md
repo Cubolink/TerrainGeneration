@@ -69,5 +69,52 @@ to create the executable.
 The folder `Dependencies` contains the compiled libraries, with the headers files to use.
 The folder `resources` contains the shaders that can be compiled, and texture resources.
 Inside `src/vendor`, there are source libraries that are included for the project.
-The `src` folder stores the project headers and cpp files.
+The `src` folder stores the project source files.
 
+### Source files
+The main is in `Application.cpp`.
+
+#### OpenGL
+`vertexbuffer.h, indexbuffer.h, vertexarray.h, vertexbufferlayout.h` allows to handle the openGL buffers.
+`texture.h` can read an image and load it as texture to GL.
+
+`renderer.h` use the previous information to render (draw) them with GL. But as drawing handling different buffers can be complicated,
+this renderer can handle shapes. With `shape.h`, you can create some shapes, that handles those GL buffers.
+
+For drawing, we also need GLSL shaders, so `shader.h` can load them from files, compile them, and then
+the renderer can use them to draw. Some shaders use many uniforms, so `light.h` and `material.h` handle
+the lighting uniforms of those lighting shaders.
+
+`glerrorhandler.h` allows us to print the GL errors that can happen, so we can debug. Use the GLCall() MACRO to
+run GL functions with this ability.
+
+#### Camera
+We draw using the Model View Projection, and with the previous described section
+we can handle the model section, and the projection is simply defined in the main Application loop. For the view we need `camera.h`.
+
+We can get the view matrix from Camera in `camera.h`, that camera handles its position and angles to calculate its 
+"eye", "center" and "up" and use them with GL look_at to get the view matrix. It handles the speed of the position and angles too,
+and calling a method we can use that information to update its position and angles after a delta time. 
+It's easy to change those parameters when in need, but it can be hard to control them with inputs, so a controller class is made.
+
+`controler.h` has a CameraController to handle movement directions caused by inputs, and then use that information to update the Camera properties.
+
+#### Noise
+`noise.h` can write values using noise over a 2D vector. It uses perlin noise with the different octaves.
+The generated matrix can be used with `shape.h` to generate a shape, with colored vertices with normals, the indices, buffers, all that
+a shape needs. That shape then can be drawn with the renderer.
+
+`obj_files.h` can store these kinds of shapes
+(actually only the shapes where each vertex has 3 position coordinates, 3 coordinates for rgb color, and 3 coords for normals).
+IT DOES NOT SUPPORT OTHER KIND OF SHAPES.
+Also, be aware that `.obj` files doesn't officially support colored vertices, so this information isn't actually written, it's skipped.
+
+So the application use it to store the noise map in a `.obj` file when it's closing.
+
+#### Application
+It starts setting up all the GL stuff, with inputs and everything. In the main loop, the
+terrain is updated only when a change in a noise variable is made from the GUI. When closing the window,
+the program stores the terrain shape in a `.obj` file. After that, the program ends.
+
+There's a bug I haven't been able to fix that makes the program freeze at the end instead of returing, but
+you can close the command line after the `.obj` is saved.

@@ -286,8 +286,8 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
-    std::cout << "Window should close" << std::endl;
-    std::cout << "Cleaning up ImGui" << std::endl;
+    std::cout << "Closing the graphic window" << std::endl;
+    std::cout << "   Cleaning up ImGui" << std::endl;
     // ImGui Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -295,18 +295,18 @@ int main()
 
 
     /* End of the program */
-    std::cout << "Storing shape" << std::endl;
+    std::cout << "   Storing shape" << std::endl;
     Obj::storeShape(terrain, "terrain.obj");
 
-    std::cout << "Destroying window" << std::endl;
+    std::cout << "   Destroying window" << std::endl;
 
     glfwDestroyWindow(window);
     glfwPollEvents();
 
-    std::cout << "Terminating glfw" << std::endl;
+    std::cout << "   Terminating glfw" << std::endl;
 
     glfwTerminate();
 
-    std::cout << "Closing program" << std::endl;
+    std::cout << "The Application ended. You can close this window if it hasn't closed by itself." << std::endl;
     return 0;
 }
