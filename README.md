@@ -43,7 +43,8 @@ This application is compiled with CMake.
 
 ### Linking Errors
 Depending on the make generator and compiler you use,
-**YOU MAY HAVE TO USE DEPENDENCIES FOR YOUR PLATFORM**, so feel free to modify the CMakeLists.txt and Dependencies.
+**YOU MAY HAVE TO USE DEPENDENCIES FOR YOUR PLATFORM**, so feel free to modify the CMakeLists.txt and Dependencies. For example,
+you may have to use precompiled binaries for 32 bits instead of 64 bits, or even precompile your own Dependencies.
 
 ### Generate makefile with CMakeLists
 On a terminal in the folder with the CMakeLists, run
