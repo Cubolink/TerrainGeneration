@@ -11,6 +11,9 @@ struct ShaderProgramSource
 	std::string FragmentSource;
 };
 
+/**
+ * Class to load, compile and handle shader programs
+ */
 class Shader
 {
 private:
@@ -33,10 +36,33 @@ public:
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 private:
+    /**
+     * Returns a ShaderProgramSource structure with the Vertex shader string source code and the Fragment shader string source, readed from a file.
+     *
+     * @param filepath The path of the single file containing the vertex and fragment source codes.
+     */
 	ShaderProgramSource ParseShaderSrcFile(const std::string& filepath);
+
+    /**
+     * Compile a shaders.
+     *
+     * @param type Type of the shader to compile.
+     * @param source Source code of the shader to compile.
+     */
 	unsigned int CompileShader(unsigned int type, const std::string& filepath);
+
+    /**
+     * Creates a shader program, with a vertexShader and a fragmentShader.
+     * @param vertexShader Source code of the vertex shader
+     * @param fragmentShader Source code of the fragment shader
+     */
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 
+    /**
+     * Gets the location of a uniform in the shader
+     * @param name
+     * @return
+     */
 	int GetUniformLocation(const std::string& name);
 
 };

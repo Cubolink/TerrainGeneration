@@ -10,6 +10,10 @@
 #include "texture.h"
 #include "shape.h"
 
+/**
+ * Class to handle drawings using different parameters like shapes and shaders,
+ * binding whatever is necessary to draw, and the drawing
+ */
 class Renderer
 {
 public:

@@ -22,11 +22,7 @@ Shader::~Shader()
     GLCall(glDeleteProgram(m_RendererID));
 }
 
-/**
-* Returns a ShaderProgramSource structure with the Vertex shader string source code and the Fragment shader string source, readed from a file.
-*
-* @param filepath The path of the single file containing the vertex and fragment source codes.
-*/
+
 ShaderProgramSource Shader::ParseShaderSrcFile(const std::string& filepath)
 {
     enum class ShaderType
@@ -60,12 +56,7 @@ ShaderProgramSource Shader::ParseShaderSrcFile(const std::string& filepath)
     return { ss[0].str(), ss[1].str() };
 }
 
-/**
-* Compile a shaders.
-*
-* @param type Type of the shader to compile.
-* @param source Source code of the shader to compile.
-*/
+
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
@@ -102,11 +93,6 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 }
 
 
-/**
-* Creates a shader program, with a vertexShader and a fragmentShader.
-* @param vertexShader Source code of the vertex shader
-* @param fragmentShader Source code of the fragment shader
-*/
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
     unsigned int program = glCreateProgram();  // tell gl we want to create a program that will be attached to our shaders

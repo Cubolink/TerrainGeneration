@@ -3,12 +3,6 @@
 #include "glerrorhandler.h"
 
 
-/**
-* Default constructor for IndexBuffer. Generates a GL (ELEMENT ARRAY) Buffer. It assumes they contain unsigned ints.
-* 
-* @param data Pointer to the index data array, which contains the indices.
-* @param count Number of indices in the index data.
-*/
 IndexBuffer::IndexBuffer(std::vector<unsigned int> &data)
 	: m_Count(data.size())
 {
@@ -19,26 +13,19 @@ IndexBuffer::IndexBuffer(std::vector<unsigned int> &data)
 	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), data.data(), GL_STATIC_DRAW));  // Tells GL that the binded buffer has some characteristics.
 }
 
-/**
-* Default destructor of IndexBuffer.
-* Tells GL to delete the buffer.
-*/
+
 IndexBuffer::~IndexBuffer()
 {
 	GLCall(glDeleteBuffers(1, &m_RendererID));
 }
 
-/**
-* Tells GL to bind the index buffer.
-*/
+
 void IndexBuffer::Bind() const
 {
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID));
 }
 
-/**
-* Tells GL to unbind the index buffer.
-*/
+
 void IndexBuffer::Unbind() const
 {
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));

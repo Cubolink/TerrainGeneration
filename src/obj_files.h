@@ -13,6 +13,11 @@
 
 namespace Obj
 {
+    /**
+     * Stores a shape in a .obj file
+     * @param shape
+     * @param filepath
+     */
     void storeShape(Shape &shape, const std::string &filepath)
     {
         std::ofstream f_stream(filepath);

@@ -9,6 +9,10 @@
 #include "texture.h"
 #include "shader.h"
 
+
+/**
+ * Class to handle material shader properties, the reflection properties of a material.
+ */
 class Material
 {
 private:
@@ -19,6 +23,14 @@ private:
     Texture texture;
 
 public:
+    /**
+     * Sets the different reflection properties of the material.
+     * @param ambiental
+     * @param diffuse
+     * @param specular
+     * @param shininess
+     * @param texture
+     */
     Material(float ambiental, float diffuse, float specular, unsigned int shininess, Texture &texture);
 
     /**

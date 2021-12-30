@@ -8,15 +8,22 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+
+/**
+ * A first person camera. It uses spherical coordinates to handle its logic.
+ */
 class Camera
 {
 private:
-    glm::vec3 eye;
-    float dx_dt, dy_dt, dz_dt, max_dEye_dt;
-    float phi, theta;  // Sphere coordinates, using eye (x, y, z)
-    float dPhi_dt, dTheta_dt, max_dCenter_dt;
+    glm::vec3 eye;                             /// position of the camera
+    float dx_dt, dy_dt, dz_dt, max_dEye_dt;    /// speed of the camera's position
+    float phi, theta;                          /// Sphere coordinates, to determine where is the center where it's looking at
+    float dPhi_dt, dTheta_dt, max_dCenter_dt;  /// speed of the camera's angles
 
 public:
+    /**
+     * Creates an instance of the camera.
+     */
     Camera();
 
     /**
@@ -45,16 +52,29 @@ public:
      */
     void updateCoords(float dt);
 
-    inline float getRho() const {return 1;}
-
+    /**
+     * @return camera's phi (spherical coords), phi-coordinate of the center look at
+     */
     inline float getPhi() const {return phi;}
 
+    /**
+     * @return camera's theta (spherical coords), theta-coordinate of the center look at
+     */
     inline float getTheta() const {return theta;}
 
+    /**
+     * @return x-coordinate of the camera's eye
+     */
     inline float getCX() const {return eye.x;}
 
+    /**
+     * @return y-coordinate of the camera's eye
+     */
     inline float getCY() const {return eye.y;}
 
+    /**
+     * @return z-coordinate of the camera's eye
+     */
     inline float getCZ() const {return eye.z;}
 
     void setPhi(float value);

@@ -2,6 +2,10 @@
 
 #include <string>
 
+
+/**
+ * Class to handle textures
+ */
 class Texture
 {
 private:

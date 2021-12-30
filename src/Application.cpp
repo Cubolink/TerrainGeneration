@@ -28,6 +28,14 @@ int w_height = 576;
 CameraController cameraController;
 
 
+/**
+ * Handles the glfw key_callback, changing parameters in the cameraController
+ * @param window
+ * @param key
+ * @param scancode
+ * @param action
+ * @param mods
+ */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     switch (key) {

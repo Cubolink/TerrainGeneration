@@ -11,6 +11,19 @@
 
 namespace NoiseGenerator  // It seems I can use namespaces as static classes, using functions instead of static methods, since I don't want to build objects
 {
+    /**
+     * Fills a map with noise values using perlin noise.
+     *
+     * @param map where to fill
+     * @param seed the random seed
+     * @param scale scale of the map
+     * @param octaves number of octaves of noise to add
+     * @param persistance (greater than 1) amplitude factor each octave will have respect to the previous one
+     * @param lacunarity  (between 0 and 1) frequency factor each octave will have respect to the previous one
+     * @param x_offset  x offset to move the map (doesn't work well
+     * @param y_offset  y offset to move the map (doesn't work well)
+     * @param z_amplitude  normalize the noise map and then scales it to z_amplitude
+     */
     static void generatePerlinNoiseMap(std::vector<std::vector<float>> &map, int seed, float scale, int octaves, float persistance, float lacunarity, float x_offset, float y_offset, float z_amplitude = 1)
     {
         int map_width = (int) map.size();

@@ -18,5 +18,9 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
+    /**
+     * Updates the vertices of the vertex buffer
+     * @param data
+     */
     void updateData(std::vector<float> &data);
 };

@@ -23,6 +23,12 @@ namespace Color
         float s;
         float v;
     };
+
+    /**
+     * Takes a RGB color and returns the equivalent in HSV
+     * @param color RGB color
+     * @return HSV color
+     */
     HSV rgb_to_hsv(RGB color)
     {
         float min = std::min(std::min(color.r, color.g), color.b);
@@ -52,6 +58,12 @@ namespace Color
 
         return {h, s, v};
     }
+
+    /**
+     * Takes an HSV color and returns the equivalent in RGB
+     * @param color HSV color
+     * @return RGB color
+     */
     RGB hsv_to_rgb(HSV color)
     {
         int h_i = ((int) (color.h / 60)) % 6;
@@ -80,8 +92,6 @@ namespace Color
     }
 
 }
-
-
 
 
 #endif //TERRAINGEN_COLOR_H

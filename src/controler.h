@@ -7,27 +7,48 @@
 
 #include "camera.h"
 
+
+/**
+ * Class to control camera properties
+ */
 class CameraController
 {
 private:
     Camera *camera;
 
-
 public:
-    float m_left = 0, m_right = 0, m_forth = 0, m_back = 0, m_up = 0, m_down = 0, rot_up = 0, rot_down = 0, rot_left = 0, rot_right = 0;
+    /// variables to determine if the camera should move in what directions.
+    float m_left = 0, m_right = 0,
+    m_forth = 0, m_back = 0,
+    m_up = 0, m_down = 0,
+    rot_up = 0, rot_down = 0,
+    rot_left = 0, rot_right = 0;
+
+    /**
+     * Creates an instance of a Camera Controller
+     */
     CameraController()
     : camera(nullptr)
     {
 
     }
 
+    /**
+     * Sets a camera to control
+     * @param cam
+     */
     void setCamera(Camera *cam)
     {
         camera = cam;
     }
 
+    /**
+     * Using the public variables, updates the camera properties
+     */
     void updateCameraProperties()
     {
+        if (camera == nullptr)
+            return;
         float forward_strength = (m_forth - m_back);
         camera->dx_dt = forward_strength * (cosf(camera->phi));  // * (sinf(camera->theta));
         camera->dy_dt = forward_strength * (sinf(camera->phi));  // * (sinf(camera->theta));
