@@ -135,9 +135,9 @@ int main()
     Shape axis_shape = createColorAxis(1);
     Shape normal_color_cube_shape = createColorNormalCube(0.2, 0.3, 0.7);
 
-    Material cube_material = Material(0.3f, 0.2f, 0.6f, 100, texture);
-    Light light = Light(1.0f, 1.0f, 1.0f, glm::vec3(-5, -5, 5),
-                        0.0001f, 0.03f, 0.01f);
+    Material cube_material = Material(0.3f, 0.6f, 0.7f, 100, texture);
+    Light light = Light(1.0f, 1.0f, 1.0f, glm::vec3(0, 0, 50),
+                        0.01f, 0.01f, 0.0001f);
     /*The binding goes on the loop*/
 
     Renderer renderer = Renderer();
@@ -149,9 +149,7 @@ int main()
     ImGui_ImplOpenGL3_Init();
 
     // Some ImgGui variable states
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
+    // ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     int map_width = 100, map_height = 100;
     std::vector<std::vector<float>> grid_map(map_width, std::vector<float>(map_height, 0));
     float scale = 1, persistance = 1.7, lacunarity = 0.2;
@@ -162,6 +160,7 @@ int main()
     bool outdated = false;
     NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
     Shape terrain = createColorNoiseMap(grid_map, amplitude*water_level);
+    light.setPosition(glm::vec3(map_width/2, map_height/2, 40));
 
     double t0 = glfwGetTime();
     double t1, dt;
@@ -201,6 +200,7 @@ int main()
                 for (auto & row : grid_map)
                     row.resize(map_height, 0);
             }
+            light.setPosition(glm::vec3(map_width/2, map_height/2, 40));
             NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
             terrain = createColorNoiseMap(grid_map, amplitude*water_level);
             outdated = false;
@@ -237,8 +237,8 @@ int main()
             // ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             ImGui::Text("Camera");
-            ImGui::Text("-> center: (%.3f, %.3f, %.3f)", camera.getCX(), camera.getCY(), camera.getCZ());
-            ImGui::Text("-> phi: %.3f, theta: %.3f", camera.getPhi(), camera.getTheta());
+            ImGui::Text("-> eye-pos: (%.3f, %.3f, %.3f)", camera.getCX(), camera.getCY(), camera.getCZ());
+            ImGui::Text("-> center(phi: %.3f, theta: %.3f)", camera.getPhi(), camera.getTheta());
 
             ImGui::Text("Perlin Terrain Parameters");
             if (ImGui::SliderInt("seed", &seed, 1, 400))
