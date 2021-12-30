@@ -39,7 +39,11 @@ In the window, a widget with a list of alterable parameters will allow you to ch
 ---
 ## Compile instructions
 
-This application is compiled with CMake
+This application is compiled with CMake.
+
+### Linking Errors
+Depending on the make generator and compiler you use,
+**YOU MAY HAVE TO USE DEPENDENCIES FOR YOUR PLATFORM**, so feel free to modify the CMakeLists.txt and Dependencies.
 
 ### Generate makefile with CMakeLists
 On a terminal in the folder with the CMakeLists, run
@@ -50,6 +54,7 @@ to create the makefile project inside the `build` folder. For windows MinGW, add
 You can choose your cmake generator with the flag `-G`, check what generators you have by running ````cmake --help````.
 
 ### Compile with the makefile
+First, go to your `build` folder.
 
 If you're using linux, then run
 ```

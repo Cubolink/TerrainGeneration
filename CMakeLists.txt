@@ -9,7 +9,7 @@ include_directories(Dependencies/GLFW/include)
 include_directories(src/vendor)
 
 # Additional Library Directories
-link_directories(Dependencies/GLEW-2.1.0/lib/Release/Win32)
+link_directories(Dependencies/GLEW-2.1.0/lib/Release/x64)
 link_directories(Dependencies/GLFW/lib-mingw-w64)
 
 # Preprocessor Definitions
