@@ -30,7 +30,7 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
         int map_height = (int) map[0].size();
 
         srand(seed);
-        float octave_offsets[octaves][2];
+        auto octave_offsets = new float[octaves][2];
         for (int i = 0; i < octaves; i++)
         {
             octave_offsets[i][0] = (float) std::rand() + x_offset;
