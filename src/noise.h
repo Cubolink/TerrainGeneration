@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cfloat>
 #include "perlin_noise/PerlinNoise.hpp"
 
 namespace NoiseGenerator  // It seems I can use namespaces as static classes, using functions instead of static methods, since I don't want to build objects
@@ -43,7 +44,8 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
         if (scale <= 0)
             scale = 0.001f;
 
-        float max_val, min_val;
+        float max_val = -FLT_MAX;
+        float min_val = FLT_MAX;
 
         // Generate not-normalized map
         for (int i = 0; i < map_width; i++)
