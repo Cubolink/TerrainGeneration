@@ -67,7 +67,7 @@ namespace Color
     RGB hsv_to_rgb(HSV color)
     {
         int h_i = ((int) (color.h / 60)) % 6;
-        float f = (float) std::fmod(((float) h_i / 60), 6) - (float) h_i;
+        float f = (float) std::fmod(((float) color.h / 60), 6) - (float) h_i;
         float p = color.v * (1 - color.s);
         float q = color.v * (1 - f*color.s);
         float t = color.v * (1 - (1 - f) * color.s);
