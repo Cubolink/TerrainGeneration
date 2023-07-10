@@ -166,8 +166,9 @@ int main()
     float amplitude = 5;
     float water_level = 0.45;
     bool outdated = false;
-    NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
-    Shape terrain = createColorNoiseMap(grid_map, amplitude*water_level);
+    int resolution = 1;
+    NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude, resolution);
+    Shape terrain = createColorNoiseMap(grid_map, amplitude*water_level, resolution);
     light.setPosition(glm::vec3(map_width/2, map_height/2, 40));
 
     double t0 = glfwGetTime();
@@ -209,8 +210,8 @@ int main()
                     row.resize(map_height, 0);
             }
             light.setPosition(glm::vec3(map_width/2, map_height/2, 40));
-            NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude);
-            terrain = createColorNoiseMap(grid_map, amplitude*water_level);
+            NoiseGenerator::generatePerlinNoiseMap(grid_map, seed, scale, octaves, persistance, lacunarity, offset_x, offset_y, amplitude, resolution);
+            terrain = createColorNoiseMap(grid_map, amplitude*water_level, resolution);
             outdated = false;
         }
 
@@ -266,9 +267,11 @@ int main()
                 outdated = true;
             if(ImGui::SliderFloat("water level", &water_level, 0.f, 1.f))
                 outdated = true;
-            if(ImGui::SliderInt("width", &map_width, 10, 300))
+            if(ImGui::SliderInt("width", &map_width, 10, 1000))
                 outdated = true;
-            if(ImGui::SliderInt("height", &map_height, 10, 300))
+            if(ImGui::SliderInt("height", &map_height, 10, 1000))
+                outdated = true;
+            if(ImGui::SliderInt("resolution", &resolution, 1, 10))
                 outdated = true;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();

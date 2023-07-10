@@ -24,8 +24,9 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
      * @param x_offset  x offset to move the map (doesn't work well
      * @param y_offset  y offset to move the map (doesn't work well)
      * @param z_amplitude  normalize the noise map and then scales it to z_amplitude
+     * @param resolution how many positions in the [0, 1] interval
      */
-    static void generatePerlinNoiseMap(std::vector<std::vector<float>> &map, int seed, float scale, int octaves, float persistance, float lacunarity, float x_offset, float y_offset, float z_amplitude = 1)
+    static void generatePerlinNoiseMap(std::vector<std::vector<float>> &map, int seed, float scale, int octaves, float persistance, float lacunarity, float x_offset, float y_offset, float z_amplitude = 1, int resolution = 1)
     {
         int map_width = (int) map.size();
         int map_height = (int) map[0].size();
@@ -50,8 +51,11 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
         // Generate not-normalized map
         for (int i = 0; i < map_width; i++)
         {
+            float x = (float) i / (float) resolution;
             for (int j = 0; j < map_height; j++)
             {
+                float y = (float) j / (float) resolution;
+
                 float amplitude = 1;
                 float frequency = 1;
                 float value = 0;
@@ -59,10 +63,10 @@ namespace NoiseGenerator  // It seems I can use namespaces as static classes, us
                 // Generate octaves, increasing/decreasing not only amplitude, but frequency too
                 for (int k = 0; k < octaves; k++)
                 {
-                    float x = ((float) i - (float) map_width/2.f) / scale * frequency + octave_offsets[k][0];
-                    float y = ((float) j - (float) map_height/2.f) / scale * frequency + octave_offsets[k][1];
+                    float tx = (x - (float) map_width/2.f) / scale * frequency + octave_offsets[k][0];
+                    float ty = (y - (float) map_height/2.f) / scale * frequency + octave_offsets[k][1];
 
-                    value += amplitude * (2 * (float) perlinNoise.noise2D_01(x, y) - 1);
+                    value += amplitude * (2 * (float) perlinNoise.noise2D_01(tx, ty) - 1);
 
                     amplitude *= persistance;
                     frequency *= lacunarity;

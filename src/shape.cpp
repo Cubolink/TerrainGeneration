@@ -151,7 +151,7 @@ Shape createColorAxis(float length) {
     return {vertices, indices, count_layouts};
 }
 
-Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level = 0.45)
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level = 0.45, int resolution = 1)
 {
     long long int w = map.size();
     long long int h = map[0].size();
@@ -162,8 +162,8 @@ Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float wate
     {
         for (long long int y = 0; y < h; y++)
         {
-            vertices[9*(h*x + y)] = (float) x;
-            vertices[9*(h*x + y) + 1] = (float) y;
+            vertices[9*(h*x + y)] = (float) x / (float) resolution;
+            vertices[9*(h*x + y) + 1] = (float) y / (float) resolution;
             vertices[9*(h*x + y) + 2] = map[x][y];
             if (map[x][y]  > max_z)
                 max_z = map[x][y];

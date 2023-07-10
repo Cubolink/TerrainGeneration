@@ -89,4 +89,4 @@ Shape createColorAxis(float length);
  * @param water_level
  * @return
  */
-Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level);
+Shape createColorNoiseMap(const std::vector<std::vector<float>>& map, float water_level, int resolution);
